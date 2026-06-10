@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Documind",
+  title: "DocuMind",
   description: "DocuMind is a production-grade RAG (Retrieval Augmented Generation) application that lets you upload PDF documents and have intelligent conversations with them. Built from scratch without abstraction frameworks — every part of the pipeline is explicit and understandable.",
+  icons: {
+    icon: "/favicon.ico", 
+  },
 };
 
 export default function RootLayout({
