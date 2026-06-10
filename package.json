@@ -9,15 +9,29 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
+    "@qdrant/js-client-rest": "^1.18.0",
+    "@qdrant/qdrant-js": "^1.18.0",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.0",
+    "framer-motion": "^12.40.0",
+    "multer": "^2.1.1",
     "next": "16.2.7",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "styled-components": "^6.4.2",
+    "supabase": "^2.105.0",
+    "unpdf": "^1.6.2",
+    "uuid": "^14.0.0",
+    "voyageai": "^0.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/multer": "^2.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "tailwindcss": "^4",

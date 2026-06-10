@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# Ignore
+.env
+
 # next.js
 /.next/
 /out/
