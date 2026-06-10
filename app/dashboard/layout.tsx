@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
       <main className="flex items-center justify-center min-h-screen flex-col gap-5">
         <Loader/>
-        <h1 className="text-3xl font-bold font-mono">Preparing your DocuMind workspace…</h1>
+        <h1 className="md:text-3xl text-lg font-bold font-mono">Preparing your DocuMind workspace…</h1>
       </main>
     )
   }

@@ -241,7 +241,7 @@ export default function ChatInterface({ uploadedDoc }: ChatInterfaceProps) {
             onKeyDown={handleKeyDown}
             placeholder={
               uploadedDoc
-                ? "Ask a question about your document..."
+                ? "Ask a question..."
                 : "Upload a document first..."
             }
             disabled={!uploadedDoc || isStreaming}
