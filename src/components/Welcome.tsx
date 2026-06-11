@@ -5,6 +5,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { easeInOut, motion } from 'framer-motion'
 import LandingPage from './LandingPage'
+import Image from 'next/image'
 const Welcome = () => {
     const [loader, setloader] = useState(false)
 
@@ -42,8 +43,17 @@ const Welcome = () => {
   return (
     <>
     <div className='bg-[#b6ccfe]'>
-        <motion.div variants={container(1)} initial='initial' animate='animate' style={{zIndex : '50', position: 'fixed'}} className='px-1.5 md:px-7 md:py-2 py-4'>
-             <span className="font-mono text-blue-400 md:text-lg text-sm">Docu<span className="text-gray-500">//</span>Mind</span>
+        <motion.div variants={container(1)} initial='initial' animate='animate' style={{zIndex : '50', position: 'fixed'}} className='px-1.5 md:px-7 md:py-1 py-4'>
+             <div className='flex items-center justify-center'>
+                     <Image 
+                             src="/logo.png"   // file is at public/logo.png
+                             alt="Documind Logo"
+                             width={50}
+                             height={50}
+                           />
+              <span className="font-mono text-blue-400 md:text-lg">DocuMind</span>
+                     
+                   </div>
         </motion.div>
     </div>
     <motion.div initial={{opacity : 0}} animate={{opacity : loader ? 1 : 0}} transition={{duration : 1, delay :1 }} style={{zIndex: '50'}}>

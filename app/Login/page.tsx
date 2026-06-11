@@ -6,12 +6,13 @@ import Link from 'next/link'
 // import { FcGoogle } from 'react-icons/fc'       // Google
 // import { FaTwitter } from 'react-icons/fa'     // Twitter
 // import { FaGithub } from 'react-icons/fa'      // GitHub
+import Image from 'next/image'
 export default function LoginPage() {
   const supabase = createClient()
 
   async function signInWithGitHub() {
     await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: 'github', 
       options: {
         redirectTo: `${window.location.origin}/auth/callback`
       }
@@ -30,9 +31,16 @@ export default function LoginPage() {
     <>
       <div className="p-4 bg-white/80">
         <Link href="/">
-          <span className="font-mono text-blue-600 text-lg px-5">
-            Docu<span className="text-purple-200">//</span>Mind
-          </span>
+          <div className='flex items-center'>
+                    <Image
+                      src="/logo.png"   // file is at public/logo.png
+                      alt="Documind Logo"
+                      width={50}
+                      height={50}
+                    />
+                    <span className="font-mono text-blue-500 md:text-lg">DocuMind</span>
+          
+                  </div>
         </Link>
       </div>
 
@@ -41,9 +49,16 @@ export default function LoginPage() {
 
           {/* Left: Welcome / Branding */}
           <aside className="md:flex flex-col justify-center items-start p-8 bg-gradient-to-b from-blue-50 to-purple-50 border-r border-gray-200">
-            <span className="font-mono text-blue-600 text-lg mb-6">
-              Docu<span className="text-purple-500">//</span>Mind
-            </span>
+            <div className='flex items-center'>
+                    <Image
+                      src="/logo.png"   // file is at public/logo.png
+                      alt="Documind Logo"
+                      width={50}
+                      height={50}
+                    />
+                    <span className="font-mono text-blue-500 md:text-lg">DocuMind</span>
+          
+                  </div>
             <h1 className="text-2xl font-extrabold mb-2 font-sans text-gray-900">
               AI answers from your documents.
             </h1>

@@ -1,14 +1,24 @@
 'use client'
 
 import Link from 'next/link'
-
+import Image from 'next/image'
 const LandingPage = () => {
   return (
     <main className="bg-gradient-to-b from-white to-gray-50 text-gray-900 min-h-screen font-sans">
 
       {/* NAV */}
       <nav className="flex justify-between items-center md:px-12 py-6 px-4 border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-md z-50">
-        <span className="font-mono text-blue-600 md:text-lg">Docu<span className="text-purple-500">//</span>Mind</span>
+        <div className='flex items-center justify-center'>
+          <Image
+            src="/logo.png"   // file is at public/logo.png
+            alt="Documind Logo"
+            width={50}
+            height={50}
+          />
+          <span className="font-mono text-blue-500 md:text-lg">DocuMind</span>
+
+        </div>
+
         <div className="flex items-center md:gap-10 gap-4">
           <a href="#features" className="text-gray-600 px-2 hover:text-blue-600 md:text-sm uppercase tracking-widest transition-colors text-xs">Features</a>
           <a href="#how" className="text-gray-600 hover:text-blue-600 md:text-sm uppercase tracking-widest transition-colors text-xs">How it works</a>
@@ -109,7 +119,7 @@ const LandingPage = () => {
       </section>
 
       {/* CTA */}
-            {/* CTA */}
+      {/* CTA */}
       <section className="text-center px-10 py-24 bg-blue-600 text-white">
         <p className="font-mono text-xs tracking-widest uppercase mb-4">// Get started</p>
         <h2 className="text-4xl font-extrabold tracking-tight mb-4">Stop searching, start asking</h2>
