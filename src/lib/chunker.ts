@@ -15,7 +15,7 @@ export async function chunkPDF(
 
 
     // STEP 1: Extract raw text from the PDF
-    // pdf-parse reads the binary PDF and gives us plain text
+    // unpdf reads the binary PDF and gives us plain text
     console.log(`Reading PDF : ${documentName}`)
     const { text } = await extractText(
         new Uint8Array(fileBUffer),  // unpdf expects Uint8Array not Buffer

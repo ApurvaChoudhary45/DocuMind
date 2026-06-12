@@ -20,10 +20,10 @@ const LandingPage = () => {
         </div>
 
         <div className="flex items-center md:gap-10 gap-4">
-          <a href="#features" className="text-gray-600 px-2 hover:text-blue-600 md:text-sm uppercase tracking-widest transition-colors text-xs">Features</a>
+          <a href="#features" className="text-gray-600 px-4 hover:text-blue-600 md:text-sm uppercase tracking-widest transition-colors text-xs">Features</a>
           <a href="#how" className="text-gray-600 hover:text-blue-600 md:text-sm uppercase tracking-widest transition-colors text-xs">How it works</a>
           <Link href="/Login" className="bg-blue-600 text-white font-mono font-bold md:text-sm md:px-6 md:py-2 rounded hover:bg-blue-700 transition-colors text-xs py-2 px-2">
-            Get started →
+            Launch
           </Link>
         </div>
       </nav>
@@ -85,7 +85,7 @@ const LandingPage = () => {
               { icon: "🔍", title: "Context-aware search", desc: "Find exact sections without scrolling through pages." },
               { icon: "⚡", title: "Instant responses", desc: "Answers generated in seconds." },
               { icon: "🔐", title: "Secure by default", desc: "Your files stay private with encrypted storage." },
-              { icon: "🗂️", title: "Multiple documents", desc: "Upload and query across several PDFs at once." },
+              
             ].map((f) => (
               <div key={f.title} className="bg-white p-8 rounded-lg shadow hover:shadow-md transition-shadow">
                 <div className="text-3xl mb-4">{f.icon}</div>
@@ -98,7 +98,7 @@ const LandingPage = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how" className="px-10 py-20 bg-gradient-to-r from-purple-50 to-blue-50">
+      <section id="how" className="px-10 py-10 bg-gradient-to-r from-purple-50 to-blue-50">
         <div className="max-w-6xl mx-auto">
           <p className="font-mono text-xs text-purple-600 tracking-widest uppercase mb-3">// How it works</p>
           <h2 className="text-4xl font-extrabold tracking-tight mb-6 text-gray-800">Get answers in 3 simple steps</h2>

@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 import { easeInOut, motion } from 'framer-motion'
 import LandingPage from './LandingPage'
 import Image from 'next/image'
+
+
 const Welcome = () => {
     const [loader, setloader] = useState(false)
 
@@ -43,7 +45,7 @@ const Welcome = () => {
   return (
     <>
     <div className='bg-[#b6ccfe]'>
-        <motion.div variants={container(1)} initial='initial' animate='animate' style={{zIndex : '50', position: 'fixed'}} className='px-1.5 md:px-7 md:py-1 py-4'>
+        <motion.div variants={container(1)} initial='initial' animate='animate' style={{zIndex : '50', position: 'fixed'}} className='md:px-7 md:py-1 py-1'>
              <div className='flex items-center justify-center'>
                      <Image 
                              src="/logo.png"   // file is at public/logo.png
