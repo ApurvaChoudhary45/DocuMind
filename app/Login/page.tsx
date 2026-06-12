@@ -10,7 +10,6 @@ import Link from 'next/link'
 
 
 import Image from 'next/image'
-import LoadGit from '@/src/components/LoadGit'
 export default function LoginPage() {
   const supabase = createClient()
 
