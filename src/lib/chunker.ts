@@ -54,7 +54,7 @@ export async function chunkPDF(
 
         const pageNumber = Math.floor((i / words.length) * 10) + 1
 
-
+        
         const chunk: Chunk = {
             id: `${documentId}-chunk-${chunkIndex}`,   // unique ID
             documentId,                                  // which document
