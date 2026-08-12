@@ -1,6 +1,6 @@
-import { createAdminClient } from './supabase/admin'
+import { createAdminClient } from "./supabase/admin"
 
-const BUCKET_NAME = 'documents'
+const BUCKET_NAME = 'DocBucket'
 
 export async function uploadDocument(
     buffer: Buffer,
