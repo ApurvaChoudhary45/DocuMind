@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadDocument } from '@/src/lib/storage'
 import { v4 as uuidv4 } from 'uuid'
-
+import { documentQueue } from '@/src/lib/queue/documentQueue'
 export async function POST(request: NextRequest) {
     try {
         // ── STEP 1: Get the file ──────────────────────────────
@@ -52,6 +52,14 @@ export async function POST(request: NextRequest) {
 
         console.log(`✅ Document stored: ${storagePath}`)
 
+        await documentQueue.add('process-document', {
+            documentId,
+            storagePath,
+            fileName: file.name,
+        })
+
+        console.log(`📨 Processing job queued for ${documentId}`)
+
         // ── STEP 6: Return upload acknowledgement ────────────
         return NextResponse.json(
             {
@@ -59,10 +67,9 @@ export async function POST(request: NextRequest) {
                 documentId,
                 documentName: file.name,
                 storagePath,
-                status: 'UPLOADED',
-                message: 'Document uploaded successfully'
+                status: 'QUEUED',
             },
-            { status: 201 }
+            { status: 202 }
         )
 
     } catch (error) {
