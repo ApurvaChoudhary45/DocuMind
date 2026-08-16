@@ -5,11 +5,15 @@ import { VectorPoint, Chunk } from '../types'
 
 import { v4 as uuidv4 } from 'uuid'
 
+import { v5 as uuidv5 } from 'uuid'
+
 const voyage = new VoyageAIClient({
     apiKey: process.env.VOYAGE_API_KEY || 'mock-key'
 })
 
 const EMBEDDING_MODEL = 'voyage-3-lite'
+
+const DOCUMIND_NAMESPACE = uuidv5.URL
 
 
 export async function embedText(text: string): Promise<number[]> {
@@ -69,7 +73,10 @@ export async function embedChunks(chunks: Chunk[]): Promise<VectorPoint[]> {
         vectors = response.data.map(i => i.embedding as number[])
 
         const batchPoints: VectorPoint[] = batch.map((chunk, index) => ({
-            id: uuidv4(),              // unique ID for Qdrant
+            id: uuidv5(
+                `${chunk.documentId}:${chunk.chunkIndex}`,
+                DOCUMIND_NAMESPACE
+            ),             // deterministic ID so that idempotency can be done properly
             vector: vectors[index],    // the 512 numbers
             payload: {
                 // Everything in payload is stored ALONGSIDE the vector in Qdrant
