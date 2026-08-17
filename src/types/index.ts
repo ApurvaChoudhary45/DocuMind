@@ -67,6 +67,8 @@ export interface UploadResponse {
   documentName: string
   chunkCount: number
   message: string
+  status : string
+  error : string
 }
 
 export interface ChatRequest {

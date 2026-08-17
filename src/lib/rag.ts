@@ -107,7 +107,7 @@ export async function queryDocuments(
   const searchResults: SearchResult[] = await searchVectors(
     questionVector,
     5,           // top 5 most relevant chunks
-    documentId   // filter to specific doc if provided
+    documentId, // filter to specific doc if provided
   )
 
   console.log(`   Found ${searchResults.length} relevant chunks`)

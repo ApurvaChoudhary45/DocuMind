@@ -108,7 +108,7 @@ export async function storeVectors(points: VectorPoint[]): Promise<void> {
 export async function searchVectors(
     queryVector: number[],      // embedText(userQuestion) result
     topK: number = 5,           // how many results to return
-    documentId?: string       // if docID available search within one document
+    documentId?: string,         // if docID available search within one document
 ): Promise<SearchResult[]> {
     try {
 

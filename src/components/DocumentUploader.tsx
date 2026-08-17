@@ -14,7 +14,7 @@ interface DocumentUploaderProps {
 }
 
 // ─── Upload Status Type ───────────────────────────────────────
-type UploadStatus = 'idle' | 'uploading' | 'processing' | 'success' | 'error'
+type UploadStatus = 'idle' | 'uploading' | 'queued' | 'error'
 
 export default function DocumentUploader({ onUploadComplete }: DocumentUploaderProps) {
 
@@ -53,7 +53,6 @@ export default function DocumentUploader({ onUploadComplete }: DocumentUploaderP
       const formData = new FormData()
       formData.append('file', file)  // 'file' must match what API route expects
       console.log(formData)
-      setStatus('processing')  // switch status while backend processes
 
       // Call our upload API route
       const response = await fetch('/api/upload', {
@@ -64,15 +63,18 @@ export default function DocumentUploader({ onUploadComplete }: DocumentUploaderP
       })
 
       const data: UploadResponse = await response.json()
-      
+
       if (!response.ok) {
-        throw new Error(data.message || 'Upload failed')
+        throw new Error(data.error || 'Upload failed')
       }
 
       // Success — store result and notify parent
-      setStatus('success')
       setUploadedDoc(data)
       onUploadComplete(data)  // tell parent: "here's the documentId"
+
+      if (data?.status === 'QUEUED') {
+        setStatus('queued')
+      }
 
     } catch (error) {
       setStatus('error')
@@ -152,45 +154,46 @@ export default function DocumentUploader({ onUploadComplete }: DocumentUploaderP
       )}
 
       {/* ── UPLOADING / PROCESSING STATE ── */}
-      {(status === 'uploading' || status === 'processing') && (
+      {(status === 'uploading') && (
         <div className="border border-gray-700 rounded-xl p-8 text-center">
           {/* Spinning loader */}
           <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent 
                           rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-300 font-medium mb-1">
-            {status === 'uploading' ? 'Uploading...' : 'Processing document...'}
+            Uploading...
           </p>
+
           <p className="text-gray-500 text-sm">
-            {status === 'processing'
-              ? 'Chunking, embedding and storing vectors. This takes a few seconds.'
-              : 'Sending file to server...'}
+            Sending your document to the server...
           </p>
         </div>
       )}
 
-      {/* ── SUCCESS STATE ── */}
-      {status === 'success' && uploadedDoc && (
-        <div className="border border-green-800 bg-green-900/20 rounded-xl p-6">
+      {/* ── QUEUED STATE ── */}
+
+      {status === 'queued' && uploadedDoc && (
+        <div className="border border-yellow-800 bg-yellow-900/20 rounded-xl p-6">
           <div className="flex items-start gap-3">
-            <span className="text-2xl">✅</span>
+            <span className="text-2xl">⏳</span>
+
             <div className="flex-1">
-              <p className="text-green-400 font-medium mb-1">
-                Document ready
+              <p className="text-yellow-400 font-medium mb-1">
+                Document queued
               </p>
+
               <p className="text-gray-400 text-sm mb-1">
                 {uploadedDoc.documentName}
               </p>
-              {/* Show how many chunks were created */}
-              {/* This gives user insight into how their doc was processed */}
+
               <p className="text-gray-500 text-xs">
-                Split into {uploadedDoc.chunkCount} searchable chunks
+                Your document has been uploaded and is waiting to be processed.
               </p>
             </div>
-            {/* Upload another document */}
+
             <button
               onClick={handleReset}
-              className="text-xs text-gray-500 hover:text-gray-300 
-                         underline transition-colors"
+              className="text-xs text-gray-500 hover:text-gray-300
+                   underline transition-colors"
             >
               Upload another
             </button>
