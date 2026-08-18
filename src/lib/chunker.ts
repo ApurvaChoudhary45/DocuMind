@@ -2,7 +2,6 @@
 import { Chunk } from "../types";
 import { extractText } from "unpdf";
 
-
 const CHUNK_SIZE = 500;
 
 const CHUNK_OVERLAP = 100;
@@ -10,9 +9,9 @@ const CHUNK_OVERLAP = 100;
 export async function chunkPDF(
     fileBUffer: Buffer,
     documentId: string,
+    userId: string,
     documentName: string
 ): Promise<Chunk[]> {
-
 
     // STEP 1: Extract raw text from the PDF
     // unpdf reads the binary PDF and gives us plain text
@@ -54,9 +53,10 @@ export async function chunkPDF(
 
         const pageNumber = Math.floor((i / words.length) * 10) + 1
 
-        
+
         const chunk: Chunk = {
-            id: `${documentId}-chunk-${chunkIndex}`,   // unique ID
+            id: `${documentId}-chunk-${chunkIndex}`,     // unique ID
+            userId,
             documentId,                                  // which document
             documentName,                                // "my-contract.pdf"
             content,                                     // the actual text

@@ -7,12 +7,39 @@
 
 import { NextRequest } from 'next/server'
 import { queryDocuments } from '@/src/lib/rag'
-
+import { createClient } from '@/src/lib/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     // ── STEP 1: Get the question from request body ──────────
     const body = await request.json()
     const { message, documentId } = body
+
+    const supabase = await createClient()
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      return Response.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const { data: document, error: documentError } = await supabase
+      .from('documents')
+      .select('id')
+      .eq('id', documentId)
+      .single()
+
+    if (documentError || !document) {
+      return Response.json(
+        { error: 'Document not found' },
+        { status: 404 }
+      )
+    }
 
     // Validate — did frontend send a message?
     if (!message || typeof message !== 'string') {
@@ -27,7 +54,7 @@ export async function POST(request: NextRequest) {
     // ── STEP 2: Run the query pipeline ─────────────────────
     // queryDocuments() returns a ReadableStream
     // It handles: embed question → search Qdrant → stream Claude response
-    const stream = await queryDocuments(message, documentId)
+    const stream = await queryDocuments(message, user.id, documentId)
 
     // ── STEP 3: Return the stream as the response ───────────
     // This is the key difference from a normal API route.

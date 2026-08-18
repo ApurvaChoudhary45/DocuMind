@@ -24,6 +24,8 @@ export default function ChatInterface({ uploadedDoc }: ChatInterfaceProps) {
   const [isStreaming, setIsStreaming] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  
+
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

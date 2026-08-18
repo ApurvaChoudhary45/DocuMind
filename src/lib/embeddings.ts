@@ -80,8 +80,8 @@ export async function embedChunks(chunks: Chunk[]): Promise<VectorPoint[]> {
                 // Everything in payload is stored ALONGSIDE the vector in Qdrant
                 // When Qdrant finds this vector, it returns all this data too
                 // This is how we get back the original text and know which doc it came from
-                
                 documentId: chunk.documentId,
+                userId: chunk.userId,
                 documentName: chunk.documentName,
                 content: chunk.content,        // ← original text, returned with search results
                 pageNumber: chunk.pageNumber,

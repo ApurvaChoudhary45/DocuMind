@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
             .from('documents')
             .insert({
                 id: documentId,
+                user_id: user.id,
                 file_name: file.name,
                 storage_path: storagePath,
                 status: 'QUEUED',
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
 
         await documentQueue.add('process-document', {
             documentId,
-            userId: user?.id,
+            userId: user.id,
             storagePath,
             fileName: file.name,
         })

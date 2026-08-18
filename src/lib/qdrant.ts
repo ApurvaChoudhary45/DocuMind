@@ -52,23 +52,27 @@ export async function setupCollection(): Promise<void> {
 // Without this, filtering by documentId throws a 400 error.
 // Same concept as CREATE INDEX in SQL.
 async function createPayloadIndexes(): Promise<void> {
-  try {
-    // Index on documentId — used to filter search to one document
-    await client.createPayloadIndex(COLLECTION_NAME, {
-      field_name: 'documentId',
-      field_schema: 'keyword',  // keyword = exact string match
-    })
-    console.log('✅ Payload index created for documentId')
 
-  } catch (error: any) {
-    // If index already exists Qdrant throws an error
-    // We can safely ignore that specific error
-    if (error?.data?.status?.error?.includes('already exists')) {
-      console.log('✅ Payload indexes already exist')
-    } else {
-      console.error('Failed to create payload indexes:', error)
+    const indexes = ['documentId', 'userId']
+
+    for (const field of indexes) {
+        try {
+            await client.createPayloadIndex(COLLECTION_NAME, {
+                field_name: field,
+                field_schema: 'keyword',
+            })
+
+            console.log(`✅ Payload index created for ${field}`)
+
+        } catch (error: any) {
+
+            if (error?.data?.status?.error?.includes('already exists')) {
+                console.log(`✅ Payload index already exists: ${field}`)
+            } else {
+                throw error
+            }
+        }
     }
-  }
 }
 
 export async function storeVectors(points: VectorPoint[]): Promise<void> {
@@ -106,49 +110,63 @@ export async function storeVectors(points: VectorPoint[]): Promise<void> {
 // Step 3 Searching in the vector DB (heart of RAG)
 
 export async function searchVectors(
-    queryVector: number[],      // embedText(userQuestion) result
-    topK: number = 5,           // how many results to return
-    documentId?: string,         // if docID available search within one document
+    queryVector: number[],
+    userId: string,
+    topK: number = 5,
+    documentId?: string,
 ): Promise<SearchResult[]> {
+
     try {
 
-        const searchOptions: any = {
-            vector: queryVector,
-            limit: topK,
-            with_payload: true, //
-            score_threshold: 0.3 // So here the threshold is 0.3 anything below this would be  irrelevant 
-        }
+        const mustFilters = [
+            {
+                key: 'userId',
+                match: { value: userId }
+            }
+        ]
 
         if (documentId) {
-            searchOptions.filter = {
-                must: [{
-                    key: 'documentId',        // filter by this payload field
-                    match: { value: documentId }  // must equal this value
-                }]
+            mustFilters.push({
+                key: 'documentId',
+                match: { value: documentId }
+            })
+        }
+
+        const searchOptions = {
+            vector: queryVector,
+            limit: topK,
+            with_payload: true,
+            score_threshold: 0.3,
+            filter: {
+                must: mustFilters
             }
         }
-        console.log(`   Filtering to document: ${documentId}`)
 
-        const results = await client.search(COLLECTION_NAME, searchOptions)
+        console.log(`   Filtering to user: ${userId}`)
+
+        if (documentId) {
+            console.log(`   Filtering to document: ${documentId}`)
+        }
+
+        const results = await client.search(
+            COLLECTION_NAME,
+            searchOptions
+        )
 
         console.log(`✅ Found ${results.length} relevant chunks`)
-
-        // Now Transform Qdrant results into our SearchResult type
 
         return results.map(result => ({
             content: result.payload?.content as string,
             documentName: result.payload?.documentName as string,
             pageNumber: result.payload?.pageNumber as number,
-            score: result.score, // Score similarity 
+            score: result.score,
         }))
-
 
     } catch (error) {
         console.error('Search failed:', error)
         throw error
     }
 }
-
 // ─── Delete Document Vectors ──────────────────────────────────
 // When a user deletes a document, remove all its vectors from Qdrant.
 

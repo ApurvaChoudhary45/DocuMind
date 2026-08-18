@@ -19,6 +19,7 @@ export interface Document {
 // A 10 page PDF might become 50 chunks
 export interface Chunk {
   id: string
+  userId: string
   documentId: string    // which document this came from
   documentName: string  // "my-contract.pdf"
   content: string       // the actual text of this chunk

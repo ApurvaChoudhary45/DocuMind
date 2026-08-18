@@ -21,6 +21,7 @@ const worker = new Worker(
 
         const {
             documentId,
+            userId,
             storagePath,
             fileName,
         } = job.data
@@ -28,6 +29,7 @@ const worker = new Worker(
         console.log(`📄 Processing ${fileName}`)
         console.log(`Document ID: ${documentId}`)
         console.log(`Storage path: ${storagePath}`)
+        console.log(`👤 User ID: ${userId}`)
 
         await setupCollection()
 
@@ -77,6 +79,7 @@ const worker = new Worker(
             const chunks = await chunkPDF(
                 buffer,
                 documentId,
+                userId,
                 fileName
             )
 

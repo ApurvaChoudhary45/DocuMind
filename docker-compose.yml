@@ -5,33 +5,49 @@ services:
   app:
     build:
       context: .
-      dockerfile: app/Dockerfile
+      dockerfile: app/Dockerfile.dev
+
+    command: npm run dev
 
     ports:
       - "3000:3000"
 
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
     environment:
       REDIS_URL: redis://redis:6379
       QDRANT_URL: http://qdrant:6333
+
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-    
+
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
 
       VOYAGE_API_KEY: ${VOYAGE_API_KEY}
       QDRANT_API_KEY: ${QDRANT_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
 
+      WATCHPACK_POLLING: "true"
 
     depends_on:
       - redis
       - qdrant
+
 
   worker:
     build:
       context: .
       dockerfile: worker/Dockerfile.worker
 
+    command: npx tsx watch worker/index.ts
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
     environment:
       REDIS_URL: redis://redis:6379
       QDRANT_URL: http://qdrant:6333
@@ -42,23 +58,28 @@ services:
       VOYAGE_API_KEY: ${VOYAGE_API_KEY}
       QDRANT_API_KEY: ${QDRANT_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      
 
     depends_on:
       - redis
       - qdrant
 
+
   redis:
     image: redis:7-alpine
+
     ports:
       - "6379:6379"
 
+
   qdrant:
     image: qdrant/qdrant
+
     ports:
       - "6333:6333"
+
     volumes:
       - qdrant_storage:/qdrant/storage
+
 
 volumes:
   qdrant_storage:
