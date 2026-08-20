@@ -17,6 +17,18 @@ export default function MainPage() {
   // Uploader sets it → ChatInterface uses it to filter searches
   const [uploadedDoc, setUploadedDoc] = useState<UploadResponse | null>(null)
 
+
+  const deleteDocument = async(documentId : string)=>{
+    try {
+      const data = await fetch(`/api/deleteDoc/${documentId}`, {method : 'DELETE'})
+
+      
+    } catch (error) {
+      
+    }
+  }
+
+
   return (
     <main className="min-h-screen bg-gray-950 text-white">
 
@@ -70,7 +82,7 @@ export default function MainPage() {
               </div>
             </div>
             <button
-              onClick={() => setUploadedDoc(null)}
+              onClick={() => {deleteDocument(uploadedDoc?.documentId), setUploadedDoc(null) }}
               className="text-xs text-gray-500 hover:text-gray-300 
                          underline transition-colors"
             >

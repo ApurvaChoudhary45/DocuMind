@@ -170,16 +170,26 @@ export async function searchVectors(
 // ─── Delete Document Vectors ──────────────────────────────────
 // When a user deletes a document, remove all its vectors from Qdrant.
 
-export async function deleteDocumentVectors(documentId: string): Promise<void> {
+export async function deleteDocumentVectors(documentId: string, userId: string): Promise<void> {
     try {
         await client.delete(COLLECTION_NAME, {
             filter: {
-                must: [{
-                    key: 'documentId',
-                    match: { value: documentId }
-                }]
-            }
+                must: [
+                    {
+                        key: 'userId',
+                        match: { value: userId }
+                    },
+                    {
+                        key: 'documentId',
+                        match: { value: documentId }
+                    }
+                ]
+            },
+            wait : true,
         })
+        console.log(
+            `🗑️ Deleted Qdrant vectors for document ${documentId}`
+        )
     } catch (error) {
         console.error('Failed to delete vectors:', error)
         throw error
