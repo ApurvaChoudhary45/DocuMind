@@ -11,7 +11,8 @@ import { setupCollection, storeVectors, searchVectors } from './qdrant'
 import { buildRAGPrompt, streamResponse } from './claude'
 import { SearchResult } from '../types'
 import { v4 as uuidv4 } from 'uuid'
-
+import { createQueryCacheKey } from './cache'
+import { getCache } from './redis'
 // // ─── PIPELINE 1: Ingest Document ──────────────────────────────
 // // Called when user uploads a PDF.
 // // Takes the raw file, runs it through the full ingestion pipeline,
@@ -92,6 +93,31 @@ export async function queryDocuments(
   } else {
     console.log(`   Searching across ALL documents`)
   }
+
+  // ----- Caching STEP ------ //
+
+  const cacheKey = createQueryCacheKey(
+    userId,
+    documentId,
+    question
+)
+
+console.log(`🔑 Cache key: ${cacheKey}`)
+
+const cachedAnswer = await getCache<string>(cacheKey)
+
+if (cachedAnswer) {
+    console.log('⚡ Cache HIT')
+
+    return new ReadableStream({
+        start(controller) {
+            controller.enqueue(cachedAnswer)
+            controller.close()
+        }
+    })
+}
+
+console.log('❌ Cache MISS')
 
   // ── STEP 1: Embed the Question ─────────────────────────────
   // Convert the user's question into a vector

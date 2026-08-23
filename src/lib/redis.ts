@@ -20,3 +20,39 @@ export async function getRedisClient() {
 
     return redis
 }
+
+export async function getCache<T>(key: string): Promise<T | null> {
+    const client = await getRedisClient()
+
+    const value = await client.get(key)
+
+    if (!value) {
+        return null
+    }
+
+    return JSON.parse(value) as T
+}
+
+
+export async function setCache(
+    key: string,
+    value: unknown,
+    ttlSeconds: number
+): Promise<void> {
+    const client = await getRedisClient()
+
+    await client.set(
+        key,
+        JSON.stringify(value),
+        {
+            EX: ttlSeconds,
+        }
+    )
+}
+
+
+export async function deleteCache(key: string): Promise<void> {
+    const client = await getRedisClient()
+
+    await client.del(key)
+}
