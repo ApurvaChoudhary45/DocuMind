@@ -12,7 +12,7 @@ import { buildRAGPrompt, streamResponse } from './claude'
 import { SearchResult } from '../types'
 import { v4 as uuidv4 } from 'uuid'
 import { createQueryCacheKey } from './cache'
-import { getCache } from './redis'
+import { getCache, setCache } from './redis'
 // // ─── PIPELINE 1: Ingest Document ──────────────────────────────
 // // Called when user uploads a PDF.
 // // Takes the raw file, runs it through the full ingestion pipeline,
@@ -83,7 +83,7 @@ export async function queryDocuments(
   question: string,
   userId: string,
   documentId?: string   // if provided, search only this document
-                        // if not provided, search ALL documents
+  // if not provided, search ALL documents
 ): Promise<ReadableStream> {
 
   console.log(`\n🔍 Starting query pipeline...`)
@@ -100,24 +100,24 @@ export async function queryDocuments(
     userId,
     documentId,
     question
-)
+  )
 
-console.log(`🔑 Cache key: ${cacheKey}`)
+  console.log(`🔑 Cache key: ${cacheKey}`)
 
-const cachedAnswer = await getCache<string>(cacheKey)
+  const cachedAnswer = await getCache<string>(cacheKey)
 
-if (cachedAnswer) {
+  if (cachedAnswer) {
     console.log('⚡ Cache HIT')
 
     return new ReadableStream({
-        start(controller) {
-            controller.enqueue(cachedAnswer)
-            controller.close()
-        }
+      start(controller) {
+        controller.enqueue(cachedAnswer)
+        controller.close()
+      }
     })
-}
+  }
 
-console.log('❌ Cache MISS')
+  console.log('❌ Cache MISS')
 
   // ── STEP 1: Embed the Question ─────────────────────────────
   // Convert the user's question into a vector
@@ -142,7 +142,7 @@ console.log('❌ Cache MISS')
 
   if (searchResults.length === 0) {
     throw new Error('No relevant documents found')
-}
+  }
 
   // Log each result so you can see what's being sent to Claude
   searchResults.forEach((result, i) => {
@@ -160,7 +160,61 @@ console.log('❌ Cache MISS')
   // Send the prompt to Claude and stream the response back
   // Returns a ReadableStream the API route will pipe to the frontend
   console.log('\n💬 Step 4: Streaming response from Claude...')
-  const stream = await streamResponse(prompt, searchResults)
+  const claudeStream = await streamResponse(prompt, searchResults)
+
+  const encoder = new TextEncoder()
+
+  const stream = new ReadableStream({
+    async start(controller) {
+
+      const reader = claudeStream.getReader()
+
+      const chunks: string[] = []
+
+      try {
+        while (true) {
+
+          const { done, value } = await reader.read()
+
+          if (done) break
+
+          const text = new TextDecoder().decode(value)
+
+          // Keep the complete answer for Redis
+          chunks.push(text)
+
+          // Immediately send the chunk to the frontend
+          controller.enqueue(value)
+        }
+
+        // Claude finished generating
+        const fullAnswer = chunks.join('')
+
+        console.log('💾 Caching generated answer...')
+
+        await setCache(
+          cacheKey,
+          fullAnswer,
+          60 * 60 // 1 hour
+        )
+
+        console.log('✅ Answer cached')
+
+        controller.close()
+
+      } catch (error) {
+
+        console.error('Streaming failed:', error)
+
+        controller.error(error)
+
+      } finally {
+
+        reader.releaseLock()
+
+      }
+    }
+  })
 
   return stream
 }
